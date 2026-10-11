@@ -1,0 +1,690 @@
+[
+ {
+  "file": "assets/audio/voice/voice_01.mp3",
+  "take": "voice_01_take6.mp3",
+  "cer": 0.0,
+  "pitch_st": 2.28,
+  "asr": "えっと、よろしくね、先輩",
+  "note": "1.5 版原样保留"
+ },
+ {
+  "file": "assets/audio/voice/voice_02.mp3",
+  "take": "voice_02_take6.mp3",
+  "cer": 0.056,
+  "pitch_range_st": 11.74,
+  "pitch_std_st": 3.93,
+  "energy_dyn_db": 15.7,
+  "asr": "やった?ねえねえ一緒に遊ぼうよ",
+  "candidates": [
+   {
+    "take": "voice_02_take1.mp3",
+    "cer": 0.056,
+    "rng": 10.34,
+    "st": 3.71,
+    "en": 16.9
+   },
+   {
+    "take": "voice_02_take2.mp3",
+    "cer": 0.056,
+    "rng": 10.23,
+    "st": 3.41,
+    "en": 17.2
+   },
+   {
+    "take": "voice_02_take3.mp3",
+    "cer": 0.056,
+    "rng": 10.33,
+    "st": 3.84,
+    "en": 12.6
+   },
+   {
+    "take": "voice_02_take4.mp3",
+    "cer": 0.056,
+    "rng": 10.59,
+    "st": 3.64,
+    "en": 17.3
+   },
+   {
+    "take": "voice_02_take5.mp3",
+    "cer": 0.056,
+    "rng": 8.98,
+    "st": 3.08,
+    "en": 14.7
+   },
+   {
+    "take": "voice_02_take6.mp3",
+    "cer": 0.056,
+    "rng": 11.74,
+    "st": 3.93,
+    "en": 15.7
+   },
+   {
+    "take": "voice_02_take7.mp3",
+    "cer": 0.111,
+    "rng": 11.75,
+    "st": 3.98,
+    "en": 12.5
+   },
+   {
+    "take": "voice_02_take8.mp3",
+    "cer": 0.056,
+    "rng": 9.11,
+    "st": 3.27,
+    "en": 17.1
+   }
+  ],
+  "lufs": -20.2
+ },
+ {
+  "file": "assets/audio/voice/voice_03.mp3",
+  "take": "voice_03_take8.mp3",
+  "cer": 0.042,
+  "pitch_range_st": 10.87,
+  "pitch_std_st": 3.24,
+  "energy_dyn_db": 20.0,
+  "asr": "あ、あの、よかったら、私とお話してくれませんか?",
+  "candidates": [
+   {
+    "take": "voice_03_take1.mp3",
+    "cer": 0.042,
+    "rng": 10.49,
+    "st": 3.14,
+    "en": 18.2
+   },
+   {
+    "take": "voice_03_take2.mp3",
+    "cer": 0.042,
+    "rng": 10.49,
+    "st": 3.17,
+    "en": 18.9
+   },
+   {
+    "take": "voice_03_take3.mp3",
+    "cer": 0.333,
+    "rng": 10.79,
+    "st": 3.15,
+    "en": 19.6
+   },
+   {
+    "take": "voice_03_take4.mp3",
+    "cer": 0.292,
+    "rng": 11.01,
+    "st": 3.27,
+    "en": 18.5
+   },
+   {
+    "take": "voice_03_take5.mp3",
+    "cer": 0.083,
+    "rng": 11.1,
+    "st": 3.16,
+    "en": 19.7
+   },
+   {
+    "take": "voice_03_take6.mp3",
+    "cer": 0.042,
+    "rng": 10.72,
+    "st": 3.0,
+    "en": 20.3
+   },
+   {
+    "take": "voice_03_take7.mp3",
+    "cer": 0.25,
+    "rng": 10.77,
+    "st": 3.18,
+    "en": 20.1
+   },
+   {
+    "take": "voice_03_take8.mp3",
+    "cer": 0.042,
+    "rng": 10.87,
+    "st": 3.24,
+    "en": 20.0
+   }
+  ],
+  "lufs": -20.9
+ },
+ {
+  "file": "assets/audio/voice/voice_04.mp3",
+  "take": "voice_04_take8.mp3",
+  "cer": 0.042,
+  "pitch_range_st": 11.66,
+  "pitch_std_st": 3.3,
+  "energy_dyn_db": 17.6,
+  "asr": "えへへ、任せてください。私、頑張っちゃいます!",
+  "candidates": [
+   {
+    "take": "voice_04_take1.mp3",
+    "cer": 0.458,
+    "rng": 11.01,
+    "st": 3.23,
+    "en": 17.3
+   },
+   {
+    "take": "voice_04_take2.mp3",
+    "cer": 0.125,
+    "rng": 11.35,
+    "st": 3.3,
+    "en": 16.6
+   },
+   {
+    "take": "voice_04_take3.mp3",
+    "cer": 0.167,
+    "rng": 11.35,
+    "st": 3.34,
+    "en": 18.0
+   },
+   {
+    "take": "voice_04_take4.mp3",
+    "cer": 0.125,
+    "rng": 11.5,
+    "st": 3.21,
+    "en": 19.4
+   },
+   {
+    "take": "voice_04_take5.mp3",
+    "cer": 0.167,
+    "rng": 11.74,
+    "st": 3.3,
+    "en": 15.6
+   },
+   {
+    "take": "voice_04_take6.mp3",
+    "cer": 0.083,
+    "rng": 10.62,
+    "st": 3.23,
+    "en": 19.4
+   },
+   {
+    "take": "voice_04_take7.mp3",
+    "cer": 0.167,
+    "rng": 10.72,
+    "st": 3.31,
+    "en": 15.6
+   },
+   {
+    "take": "voice_04_take8.mp3",
+    "cer": 0.042,
+    "rng": 11.66,
+    "st": 3.3,
+    "en": 17.6
+   }
+  ],
+  "lufs": -20.4
+ },
+ {
+  "file": "assets/audio/voice/voice_05.mp3",
+  "take": "voice_05_take2.mp3",
+  "cer": 0.0,
+  "pitch_range_st": 12.82,
+  "pitch_std_st": 3.77,
+  "energy_dyn_db": 23.2,
+  "asr": "キラキラのステージ!ちゃんと見ててね!約束だよ!",
+  "candidates": [
+   {
+    "take": "voice_05_take1.mp3",
+    "cer": 0.0,
+    "rng": 9.69,
+    "st": 3.28,
+    "en": 23.9
+   },
+   {
+    "take": "voice_05_take2.mp3",
+    "cer": 0.0,
+    "rng": 12.82,
+    "st": 3.77,
+    "en": 23.2
+   },
+   {
+    "take": "voice_05_take3.mp3",
+    "cer": 0.273,
+    "rng": 10.24,
+    "st": 3.7,
+    "en": 22.9
+   },
+   {
+    "take": "voice_05_take4.mp3",
+    "cer": 0.0,
+    "rng": 10.78,
+    "st": 3.62,
+    "en": 21.1
+   },
+   {
+    "take": "voice_05_take5.mp3",
+    "cer": 0.0,
+    "rng": 11.86,
+    "st": 4.0,
+    "en": 20.8
+   },
+   {
+    "take": "voice_05_take6.mp3",
+    "cer": 0.0,
+    "rng": 11.88,
+    "st": 3.72,
+    "en": 21.2
+   },
+   {
+    "take": "voice_05_take7.mp3",
+    "cer": 0.0,
+    "rng": 12.94,
+    "st": 3.81,
+    "en": 22.2
+   },
+   {
+    "take": "voice_05_take8.mp3",
+    "cer": 0.0,
+    "rng": 10.99,
+    "st": 3.63,
+    "en": 22.6
+   }
+  ],
+  "lufs": -20.6
+ },
+ {
+  "file": "assets/audio/voice/voice_06.mp3",
+  "take": "voice_06_take2.mp3",
+  "cer": 0.087,
+  "pitch_range_st": 11.69,
+  "pitch_std_st": 3.41,
+  "energy_dyn_db": 19.2,
+  "asr": "え、魔法で、あなたを笑顔にしちゃうんだから",
+  "candidates": [
+   {
+    "take": "voice_06_take1.mp3",
+    "cer": 0.087,
+    "rng": 11.69,
+    "st": 3.54,
+    "en": 18.0
+   },
+   {
+    "take": "voice_06_take2.mp3",
+    "cer": 0.087,
+    "rng": 11.69,
+    "st": 3.41,
+    "en": 19.2
+   },
+   {
+    "take": "voice_06_take3.mp3",
+    "cer": 0.087,
+    "rng": 11.69,
+    "st": 3.41,
+    "en": 19.0
+   },
+   {
+    "take": "voice_06_take4.mp3",
+    "cer": 0.13,
+    "rng": 10.98,
+    "st": 3.43,
+    "en": 18.8
+   },
+   {
+    "take": "voice_06_take5.mp3",
+    "cer": 0.13,
+    "rng": 11.37,
+    "st": 3.37,
+    "en": 18.8
+   },
+   {
+    "take": "voice_06_take6.mp3",
+    "cer": 0.087,
+    "rng": 11.22,
+    "st": 3.52,
+    "en": 19.4
+   },
+   {
+    "take": "voice_06_take7.mp3",
+    "cer": 0.087,
+    "rng": 11.55,
+    "st": 3.36,
+    "en": 20.0
+   },
+   {
+    "take": "voice_06_take8.mp3",
+    "cer": 0.087,
+    "rng": 11.19,
+    "st": 3.31,
+    "en": 19.8
+   }
+  ],
+  "lufs": -19.5
+ },
+ {
+  "file": "assets/audio/voice/voice_07.mp3",
+  "take": "voice_07_take7.mp3",
+  "cer": 0.038,
+  "pitch_range_st": 11.55,
+  "pitch_std_st": 3.5,
+  "energy_dyn_db": 20.9,
+  "asr": "フフッ、やったあえたね。あなたに会えてすっごく嬉しいな。",
+  "candidates": [
+   {
+    "take": "voice_07_take1.mp3",
+    "cer": 0.115,
+    "rng": 11.86,
+    "st": 3.52,
+    "en": 18.9
+   },
+   {
+    "take": "voice_07_take2.mp3",
+    "cer": 0.115,
+    "rng": 10.97,
+    "st": 3.27,
+    "en": 21.0
+   },
+   {
+    "take": "voice_07_take3.mp3",
+    "cer": 0.115,
+    "rng": 10.04,
+    "st": 3.06,
+    "en": 20.4
+   },
+   {
+    "take": "voice_07_take4.mp3",
+    "cer": 0.192,
+    "rng": 11.65,
+    "st": 3.28,
+    "en": 21.7
+   },
+   {
+    "take": "voice_07_take5.mp3",
+    "cer": 0.115,
+    "rng": 9.69,
+    "st": 3.18,
+    "en": 21.2
+   },
+   {
+    "take": "voice_07_take6.mp3",
+    "cer": 0.077,
+    "rng": 9.6,
+    "st": 3.2,
+    "en": 22.1
+   },
+   {
+    "take": "voice_07_take7.mp3",
+    "cer": 0.038,
+    "rng": 11.55,
+    "st": 3.5,
+    "en": 20.9
+   },
+   {
+    "take": "voice_07_take8.mp3",
+    "cer": 0.154,
+    "rng": 10.67,
+    "st": 3.09,
+    "en": 17.8
+   }
+  ],
+  "lufs": -20.3
+ },
+ {
+  "file": "assets/audio/voice/voice_08.mp3",
+  "take": "voice_08_take7.mp3",
+  "cer": 0.037,
+  "pitch_range_st": 11.52,
+  "pitch_std_st": 3.36,
+  "energy_dyn_db": 12.6,
+  "asr": "わーい!この歌、あなただけに届けるね!一緒に歌おう!",
+  "candidates": [
+   {
+    "take": "voice_08_take1.mp3",
+    "cer": 0.037,
+    "rng": 10.44,
+    "st": 3.21,
+    "en": 13.1
+   },
+   {
+    "take": "voice_08_take2.mp3",
+    "cer": 0.037,
+    "rng": 10.88,
+    "st": 3.21,
+    "en": 15.0
+   },
+   {
+    "take": "voice_08_take3.mp3",
+    "cer": 0.037,
+    "rng": 9.52,
+    "st": 3.12,
+    "en": 13.3
+   },
+   {
+    "take": "voice_08_take4.mp3",
+    "cer": 0.074,
+    "rng": 10.11,
+    "st": 3.17,
+    "en": 11.8
+   },
+   {
+    "take": "voice_08_take5.mp3",
+    "cer": 0.037,
+    "rng": 10.6,
+    "st": 3.16,
+    "en": 14.5
+   },
+   {
+    "take": "voice_08_take6.mp3",
+    "cer": 0.037,
+    "rng": 11.35,
+    "st": 3.26,
+    "en": 13.7
+   },
+   {
+    "take": "voice_08_take7.mp3",
+    "cer": 0.037,
+    "rng": 11.52,
+    "st": 3.36,
+    "en": 12.6
+   },
+   {
+    "take": "voice_08_take8.mp3",
+    "cer": 0.037,
+    "rng": 10.44,
+    "st": 3.28,
+    "en": 13.2
+   }
+  ],
+  "lufs": -20.0
+ },
+ {
+  "file": "assets/audio/voice/voice_09.mp3",
+  "take": "voice_09_take3.mp3",
+  "cer": 0.08,
+  "pitch_range_st": 7.02,
+  "pitch_std_st": 2.0,
+  "energy_dyn_db": 17.1,
+  "asr": "月の光の下で ずっとあなたを待ってたの?え…",
+  "candidates": [
+   {
+    "take": "voice_09_take1.mp3",
+    "cer": 0.2,
+    "rng": 5.84,
+    "st": 1.68,
+    "en": 19.0
+   },
+   {
+    "take": "voice_09_take2.mp3",
+    "cer": 0.16,
+    "rng": 5.21,
+    "st": 1.79,
+    "en": 18.5
+   },
+   {
+    "take": "voice_09_take3.mp3",
+    "cer": 0.08,
+    "rng": 7.02,
+    "st": 2.0,
+    "en": 17.1
+   },
+   {
+    "take": "voice_09_take4.mp3",
+    "cer": 0.12,
+    "rng": 5.65,
+    "st": 1.72,
+    "en": 17.5
+   },
+   {
+    "take": "voice_09_take5.mp3",
+    "cer": 0.28,
+    "rng": 4.86,
+    "st": 1.47,
+    "en": 17.3
+   },
+   {
+    "take": "voice_09_take6.mp3",
+    "cer": 0.2,
+    "rng": 5.89,
+    "st": 1.83,
+    "en": 18.8
+   },
+   {
+    "take": "voice_09_take7.mp3",
+    "cer": 0.2,
+    "rng": 4.75,
+    "st": 1.46,
+    "en": 15.8
+   },
+   {
+    "take": "voice_09_take8.mp3",
+    "cer": 0.32,
+    "rng": 5.69,
+    "st": 1.6,
+    "en": 14.3
+   }
+  ],
+  "lufs": -20.5
+ },
+ {
+  "file": "assets/audio/voice/voice_10.mp3",
+  "take": "voice_10_take1.mp3",
+  "cer": 0.034,
+  "pitch_range_st": 11.19,
+  "pitch_std_st": 3.47,
+  "energy_dyn_db": 21.4,
+  "asr": "あらあら、よくぞここまで来たわねフフフ、特別に褒めてあげる",
+  "candidates": [
+   {
+    "take": "voice_10_take1.mp3",
+    "cer": 0.034,
+    "rng": 11.19,
+    "st": 3.47,
+    "en": 21.4
+   },
+   {
+    "take": "voice_10_take2.mp3",
+    "cer": 0.966,
+    "rng": 10.44,
+    "st": 3.24,
+    "en": 18.7
+   },
+   {
+    "take": "voice_10_take3.mp3",
+    "cer": 0.172,
+    "rng": 11.05,
+    "st": 3.49,
+    "en": 21.1
+   },
+   {
+    "take": "voice_10_take4.mp3",
+    "cer": 0.138,
+    "rng": 12.39,
+    "st": 3.6,
+    "en": 21.4
+   },
+   {
+    "take": "voice_10_take5.mp3",
+    "cer": 0.103,
+    "rng": 11.01,
+    "st": 3.22,
+    "en": 19.6
+   },
+   {
+    "take": "voice_10_take6.mp3",
+    "cer": 0.138,
+    "rng": 10.87,
+    "st": 3.32,
+    "en": 19.8
+   },
+   {
+    "take": "voice_10_take7.mp3",
+    "cer": 0.103,
+    "rng": 11.01,
+    "st": 3.36,
+    "en": 16.1
+   },
+   {
+    "take": "voice_10_take8.mp3",
+    "cer": 0.103,
+    "rng": 10.31,
+    "st": 3.09,
+    "en": 22.3
+   }
+  ],
+  "lufs": -19.8
+ },
+ {
+  "file": "assets/audio/voice/voice_11.mp3",
+  "take": "voice_11_take8.mp3",
+  "cer": 0.0,
+  "pitch_range_st": 11.44,
+  "pitch_std_st": 3.39,
+  "energy_dyn_db": 22.3,
+  "asr": "星の海から愛を込めてこれからもずっと一緒だよ",
+  "candidates": [
+   {
+    "take": "voice_11_take1.mp3",
+    "cer": 0.111,
+    "rng": 11.36,
+    "st": 3.59,
+    "en": 21.2
+   },
+   {
+    "take": "voice_11_take2.mp3",
+    "cer": 0.0,
+    "rng": 9.06,
+    "st": 2.93,
+    "en": 21.7
+   },
+   {
+    "take": "voice_11_take3.mp3",
+    "cer": 0.0,
+    "rng": 11.37,
+    "st": 3.11,
+    "en": 21.0
+   },
+   {
+    "take": "voice_11_take4.mp3",
+    "cer": 0.0,
+    "rng": 10.82,
+    "st": 3.3,
+    "en": 19.9
+   },
+   {
+    "take": "voice_11_take5.mp3",
+    "cer": 0.074,
+    "rng": 12.27,
+    "st": 3.73,
+    "en": 20.6
+   },
+   {
+    "take": "voice_11_take6.mp3",
+    "cer": 0.0,
+    "rng": 10.54,
+    "st": 3.15,
+    "en": 20.8
+   },
+   {
+    "take": "voice_11_take7.mp3",
+    "cer": 0.0,
+    "rng": 11.37,
+    "st": 3.39,
+    "en": 21.6
+   },
+   {
+    "take": "voice_11_take8.mp3",
+    "cer": 0.0,
+    "rng": 11.44,
+    "st": 3.39,
+    "en": 22.3
+   }
+  ],
+  "lufs": -20.5
+ }
+]

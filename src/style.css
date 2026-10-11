@@ -1,0 +1,21 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 30%, #fbe3f2 0%, #d9cff5 70%, #c6b9ec 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+canvas#game {
+  display: block;
+  touch-action: none;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(120, 60, 150, 0.25);
+}

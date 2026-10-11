@@ -1,0 +1,13 @@
+リダ / Lida（感情表現モデル） — AivisHub model 446d2053-14ca-4b68-897c-380faf555b59
+Retrieved from the AivisHub model manifest on 2026-10-11. The author states this license may change; check the AivisHub model page for the latest terms.
+
+使用条件及び、禁止事項の範囲内でご自由に商用・非商用問わずご利用いただけます。
+
+（使用条件） 
+利用の際は、話者に以下のキャラクター名とURLを記載してください。 
+「リダ」または「Lida」
+ https://youtube.com/channel/UC2tX473Zo09ZCnhAUNdAvjA/join
+
+（禁止事項） ・二次配布および譲渡 ・学習素材としての使用 ・暴力的、性的な利用 ・リダのキャラクター性やブランドを損なうと判断されるもの ・その他、不適切と判断されるもの
+
+このライセンスは都度、変更される場合があります。

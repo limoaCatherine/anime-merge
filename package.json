@@ -1,0 +1,32 @@
+{
+  "name": "anime-merge",
+  "version": "1.6.0",
+  "description": "《美少女合成》AnimeMerge - HTML5 + Matter.js 合成小游戏",
+  "main": "src/main.js",
+  "scripts": {
+    "build": "node tools/build.mjs",
+    "serve": "node tools/serve.js 8765",
+    "start": "npm run build && node tools/serve.js 8765",
+    "process-images": "python tools/process_images.py",
+    "vendor": "node -e \"require('fs').copyFileSync('node_modules/matter-js/build/matter.min.js','vendor/matter.min.js')\"",
+    "test": "node tools/test.mjs",
+    "voices": "node tools/generate_voices.mjs",
+    "package:win": "node tools/package.mjs win",
+    "package:linux": "node tools/package.mjs linux",
+    "icons": "python tools/make_icons.py",
+    "desktop": "npm run build && electron desktop/main.js",
+    "test:desktop": "node tools/test-desktop.mjs"
+  },
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@electron/packager": "^20.3.0",
+    "electron": "^44.7.0",
+    "esbuild": "^0.28.2",
+    "matter-js": "^0.19.0",
+    "playwright": "^1.64.0",
+    "resedit": "^3.1.0"
+  },
+  "private": true,
+  "type": "commonjs",
+  "author": "上海盖姆艾尔网络科技有限公司"
+}
