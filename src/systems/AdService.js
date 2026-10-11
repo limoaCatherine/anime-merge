@@ -3,8 +3,8 @@
 //     game.ads.showRewardedAd(placement) -> Promise<boolean>     (true = 完整看完，发放奖励)
 //
 // - 抖音小游戏且已在 src/config/PlatformConfig.js 填写 rewardedAdUnitId → 平台真实激励视频 (tt.createRewardedVideoAd)
-// - 浏览器版 (未接广告)          → 画面内 5 秒「广告占位」倒计时 (ui/AdOverlay.js)，不含任何广告 SDK
-// - 桌面版 / 抖音未填广告位 ID   → available = false，游戏里不显示看广告入口
+// - 平台开启 placeholderAds 时   → 画面内 5 秒「广告占位」倒计时 (ui/AdOverlay.js)，不含任何广告 SDK (目前所有平台均关闭)
+// - 网页版 / 桌面版 / 抖音、微信未填广告位 ID → available = false，游戏里不显示看广告入口
 // 广告展示期间 busy = true：Game 暂停场景更新，台词暂缓。
 import { PlatformConfig } from '../config/PlatformConfig.js';
 

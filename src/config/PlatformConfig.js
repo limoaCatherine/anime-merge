@@ -50,13 +50,13 @@ export const PlatformConfig = {
     freeReviveWithoutAds: true,                    // 未填广告位时：每局 1 次免费「再试一次」
   },
   web: {
-    placeholderAds: true,       // 浏览器版：没有真实广告时显示 5 秒「广告占位」(便于测试复活 / +1 整理流程)
+    placeholderAds: false,      // 浏览器版：不显示广告和看广告入口 (与桌面版相同)
   },
   desktop: {
     placeholderAds: false,      // 桌面 (Electron) 版：不显示广告和看广告入口
   },
   ads: {
-    fakeDuration: 5,            // 占位广告时长 (秒)
+    fakeDuration: 5,            // 占位广告时长 (秒，仅在某平台开启 placeholderAds 时使用)
     revivePerGame: 1,           // 每局可看广告复活次数
     tidyPerGame: 1,             // 每局可看广告 +1 整理 次数
     reviveClearBand: 90,        // 复活：清除顶部高于 警戒线 + 90px 的角色/石头

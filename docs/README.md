@@ -78,7 +78,7 @@ node tools/test-wechat.mjs --shots   # 重新生成 docs/wechat/screenshots/ 截
 
 ### 平台抽象层与激励广告（1.8 新增）
 - `src/platform/`：`Platform`（接口）→ `WebPlatform` / `ElectronPlatform` / `DouyinPlatform` → `WechatPlatform`。画布、触摸/鼠标/键盘、图片加载、音频、存储、前后台、广告、录屏、分享、侧边栏全部经由平台层；**游戏逻辑与 systems 中不出现 window / document / tt**（`build:douyin` 会静态检查）
-- `AdService.showRewardedAd(placement)` → `Promise<boolean>`（与其他小游戏相同接口）：抖音且填了 adUnitId 时用真实 `tt.createRewardedVideoAd`；网页版显示 5 秒占位广告（URL 加 `?noads` 关闭）；桌面版、以及未填广告位的抖音版**不出现任何看广告入口**
+- `AdService.showRewardedAd(placement)` → `Promise<boolean>`（与其他小游戏相同接口）：抖音且填了 adUnitId 时用真实 `tt.createRewardedVideoAd`；网页版、桌面版、以及未填广告位的抖音/微信版**不出现任何看广告入口**
 - 抖音未填广告位时（流量主只能上线后开通）：复活改为每局 1 次免费「再试一次」，+1 整理隐藏；填上广告位 ID 后自动恢复看视频复活/+1 整理（`PlatformConfig.douyin.freeReviveWithoutAds`）
 - 广告位：① **看视频复活**（每局 1 次，清掉警戒线附近及以上的角色后继续）② **整理次数用完后看视频 +1 整理**（每局 1 次）。次数在 `PlatformConfig.ads`
 

@@ -156,7 +156,7 @@ export class WebPlatform extends Platform {
   onHide(cb) { document.addEventListener('visibilitychange', () => { if (document.hidden) cb(); }); }
   get hidden() { return !!document.hidden; }
 
-  /** 浏览器版：使用画面内的 5 秒占位广告 (不接任何广告 SDK) */
+  /** 浏览器版：默认关闭占位广告 (PlatformConfig.web.placeholderAds = false)，不显示任何看广告入口 */
   get placeholderAds() { return PlatformConfig.web.placeholderAds && !this.noAds; }
 
   exposeDebug(game) { window.__ANIME_MERGE__ = game; }
