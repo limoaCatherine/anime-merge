@@ -1,66 +1,72 @@
 # 美少女合成 · AnimeMerge
 
-> 竖屏物理合成小游戏（"合成大西瓜"类）｜HTML5 Canvas + Matter.js｜三档难度｜网页版 + Windows 桌面版 + 抖音小游戏 + 微信小游戏
+> 二次元物理合成小游戏，玩法和「合成大西瓜」一样。下载、解压、双击就能玩。出品：狸猫
 
-投放二次元少女头像，两个相同等级的角色碰到一起就合成为更高一级，共 11 级，最高级为「星海女神」。在经典合成玩法上，按难度拆分出投放倒计时、出生池权重、场地宽度、重力和石头障碍等规则，并用自动化机器人模拟验证每个难度的目标达成率。
+<p align="center"><img src="docs/screenshot-play.png" width="300" alt="游戏画面"></p>
 
-<p>
-<img src="docs/screenshot-menu.png" width="200" alt="主菜单">
-<img src="docs/screenshot-hard.png" width="200" alt="困难模式">
-<img src="docs/screenshot-gameover.png" width="200" alt="结算">
-</p>
+## 🎮 下载就能玩（Windows）
+
+1. 打开 **[Releases（发布页）](https://github.com/limoaCatherine/anime-merge/releases/latest)**。
+2. 下载 **`meishaonv-hecheng-windows.zip`**（约 155 MB），在文件上右键选「**全部解压缩**」。
+3. 双击解压出来的 **`美少女合成\美少女合成.exe`** 就能开始玩，**不用安装**。
+
+直接下载：[meishaonv-hecheng-windows.zip](https://github.com/limoaCatherine/anime-merge/releases/latest/download/meishaonv-hecheng-windows.zip)
+
+### 🌐 网页版（Windows、Mac 等系统都能玩）
+
+下载 **[`meishaonv-hecheng-web.zip`](https://github.com/limoaCatherine/anime-merge/releases/latest/download/meishaonv-hecheng-web.zip)**（约 5 MB），解压后双击 `美少女合成-网页版\index.html`，游戏会在浏览器中打开（推荐 Chrome 或 Edge）。**不需要联网。**
+
+### ⚠ Windows 提示「Windows 已保护你的电脑」？
+
+这个提示来自 SmartScreen。游戏没有购买代码签名证书，所以第一次运行时会出现这个提示。点 **「更多信息」→「仍要运行」** 即可。
 
 ## 玩法
 
-- 左右瞄准、点击投放；每次只出最低几级的角色，顶部预告"下一个"。
-- 同级相碰合成升级并得分，短时间连续合成有连锁加成；两个「星海女神」相遇双双升华，+1000 分。
-- 静止角色越过顶部红色警戒线超过一定时间即游戏结束。
-- 三档难度：简单（无尽）、普通（目标 Lv9「月之公主」）、困难（目标 Lv10「天空女王」），达成目标后可继续无尽挑战。
+点击投放二次元少女，**两个相同等级的角色碰到一起，就会合成为下一级角色**。从第 1 级「见习学妹」开始，一路合成到第 11 级「星海女神」。两个星海女神相遇时会双双升华，奖励 +1000 分。角色堆过顶部红色警戒线，游戏就结束了。
 
-## 数值设计要点
+| 操作 | 鼠标 / 触屏 | 键盘 |
+| --- | --- | --- |
+| 瞄准 | 左右移动 / 按住拖动 | ← → 或 A D |
+| 投放 | 点击 / 松开手指 | 空格 / 回车 / ↓ |
+| 暂停 | 右上角 ⏸ | P / Esc |
+| 整理道具（简单模式） | 「整理」按钮 | T |
 
-- **难度全部数据驱动**（`src/config/DifficultyConfig.js`，系统代码无难度分支）：
+| 难度 | 简单 | 普通 | 困难 |
+| --- | --- | --- | --- |
+| 投放倒计时 | 无 | 8 秒 | 4 秒 |
+| 警戒线判负 | 3 秒 | 2 秒 | 1.5 秒 |
+| 特殊规则 | 「整理」道具 ×3 | — | 场地变窄、重力更大，底部会升起石头 |
+| 目标 | 无尽模式 | 合成「月之公主」（Lv9） | 合成「天空女王」（Lv10） |
 
-  | 项目 | 简单 | 普通 | 困难 |
-  | --- | --- | --- | --- |
-  | 投放倒计时 | 无 | 8 秒 | 4 秒 |
-  | 出生池权重（Lv1→Lv5） | 36/30/21/13 | 32/26/20/13/9 | 16/20/24/22/18（偏大角色） |
-  | 警戒线判负 | 3 秒 | 2 秒 | 1.5 秒 |
-  | 场地 / 重力 | 标准 | 标准 | 左右各收窄 12px，重力 ×1.15 |
-  | 道具 / 障碍 | 「整理」×3 | — | 石头：首块 18 秒、之后每 25 秒，邻接合成 2 次碎裂，最多 3 块 |
+每个难度的最高分分开保存。达成目标后，可以选择继续无尽挑战。
 
-- **成长与得分曲线**：11 级角色的半径与合成得分逐级递增（得分 1→66，见 `docs/README.md` 角色等级表）；连锁窗口 0.8 秒，每多一连锁额外 +2 分。
-- **用模拟校准目标**：`tools/bot-sim.mjs` 在真实构建上用固定种子跑贪心机器人。原困难目标「星海女神」在模拟中达成率为 0%，因此下调为「天空女王」并放宽场地；调整后的结果（每档 40 局，见 `docs/bot-sim-strategic.json`）：普通目标达成率 97%，困难 15%，简单（无尽）平均存活 386 秒。
-- **留存**：三档难度最高分分别保存；每位角色在一局中第一次出现时播放语音并显示「NEW!」，强化合成新角色的反馈。
+## 制作人员
 
-## 技术栈
+- **出品：狸猫**
+- 角色语音（[AivisSpeech](https://aivis-project.com/)）：
+  - AivisSpeech: コハク
+  - AivisSpeech: 凛音エル
+  - AivisSpeech: みちのくあいり
+  - AivisSpeech: らせつん
+  - AivisSpeech: まお
+  - **AivisSpeech: リダ / Lida**：https://youtube.com/channel/UC2tX473Zo09ZCnhAUNdAvjA/join
+  - **Tαkoe:AivisSpeech:黄金笑**
+- 语音模型授权：
+  - コハク、凛音エル、みちのくあいり、らせつん、まお 使用 [ACML 1.0](https://github.com/Aivis-Project/ACML)。
+  - リダ / Lida 使用作者自定的授权。
+  - 黄金笑 使用 Tαkoeプロジェクト利用規約。
+  - 授权全文见 [`docs/licenses/`](docs/licenses/)，Windows 版的 `美少女合成\licenses\` 文件夹里也有一份。
+- 背景音乐：《星糖午后》，原创程序化作曲
+- 物理引擎：[Matter.js](https://brm.io/matter-js/)（MIT License）
+- 桌面版运行时：[Electron](https://www.electronjs.org/)（MIT License）
 
-HTML5 Canvas 2D · 原生 JavaScript (ES Modules) · Matter.js 0.19 · esbuild · Electron · Playwright · WebAudio（实时合成音效）· AivisSpeech（角色语音）· Python（程序化作曲 BGM）
+## 授权说明
 
-## 如何运行
+- 本游戏免费下载和游玩。
+- 游戏代码、角色立绘和背景音乐的版权归出品方「狸猫」所有，**未经许可不得转载、二次分发或商用**。
+- 角色语音按上面各语音模型的授权条款使用。游戏中的语音不得单独提取或另作他用。
+- Matter.js 和 Electron 按各自的 MIT License 使用，许可文本随 Windows 版一起提供（`LICENSE`、`LICENSES.chromium.html`）。
 
-```bash
-npm install
-npm start              # 构建并在 http://localhost:8765 启动
-npm run build          # 构建到 dist/，可直接双击 dist/index.html
-npm test               # 浏览器自动化测试
-npm run desktop        # Electron 桌面版
-npm run package:win    # 打包 Windows x64
-npm run build:douyin   # 抖音小游戏工程 -> douyin/（npm run test:douyin 验证）
-npm run build:wechat   # 微信小游戏工程 -> wechat/（npm run test:wechat 验证）
-node tools/bot-sim.mjs # 难度模拟（需先 build）
-```
+---
 
-详细的难度表、语音台词、换皮说明见 [docs/README.md](docs/README.md)（其中困难模式的场地宽度与目标等级早于最近一次调整，以 `src/config/DifficultyConfig.js` 为准）。
-
-## 小游戏版（抖音 / 微信）
-
-同一套玩法代码通过平台层 `src/platform/`（Web / Electron / Douyin / Wechat）运行在四个平台上，游戏逻辑里不出现 `window`、`document`、`tt` 或 `wx`。`douyin/` 和 `wechat/` 是可以直接用对应开发者工具导入的小游戏工程，AppID 和广告位 ID 统一在 `src/config/PlatformConfig.js` 中配置。上架流程见 `douyin/抖音上架说明.md` 和 `docs/微信上架说明.md`。
-
-## 关于开发方式
-
-本项目使用 AI 辅助开发（代码实现与部分素材生成）；玩法设计、难度规则与数值调优由作者完成。
-
-## 署名
-
-角色语音使用 AivisSpeech 及相应声音模型，授权说明见 `docs/licenses/`；物理引擎 Matter.js (MIT)；BGM 为原创程序化作曲。
+开发者：构建、测试、打包和项目结构见 **[docs/开发说明.md](docs/开发说明.md)**，完整设计文档见 [docs/README.md](docs/README.md)。
