@@ -3,7 +3,8 @@
 export const GameConfig = {
   title: '美少女合成',
   subtitle: 'AnimeMerge',
-  version: '1.0.0',
+  publisher: '狸猫',          // 出品方 (标题画面「出品：狸猫」、制作人员、exe 版本信息)
+  version: '1.8.0',
 
   // 逻辑分辨率 (9:16 竖屏)，实际显示按窗口等比缩放
   width: 540,
@@ -65,6 +66,7 @@ export const GameConfig = {
     textLight: '#ffffff',
     danger: '#ff4d6d',
     panel: 'rgba(255,255,255,0.88)',
+    letterbox: '#e6d8fb',     // 抖音版屏幕比例不是 9:16 时上下/左右留边的颜色
   },
 
   storageKey: 'animeMerge.save.v1',

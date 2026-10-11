@@ -1,0 +1,29 @@
+{
+  "description": "《美少女合成》抖音小游戏 —— 由 npm run build:douyin 生成",
+  "projectname": "美少女合成",
+  "appid": "testappid",
+  "compileType": "game",
+  "setting": {
+    "es6": true,
+    "urlCheck": false,
+    "minified": true,
+    "postcss": false,
+    "newFeature": true
+  },
+  "packOptions": {
+    "ignore": [
+      {
+        "type": "folder",
+        "value": "上架资料"
+      },
+      {
+        "type": "suffix",
+        "value": ".md"
+      },
+      {
+        "type": "suffix",
+        "value": ".txt"
+      }
+    ]
+  }
+}

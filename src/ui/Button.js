@@ -186,6 +186,20 @@ export const Icons = {
       ctx.beginPath(); ctx.arc(dx * k, ky * k, 3.8 * k, 0, Math.PI * 2); ctx.fill();
     });
   },
+  /** 礼物 (侧边栏奖励) */
+  gift(ctx, s) {
+    const k = s / 44;
+    const C = GameConfig.colors;
+    ctx.fillStyle = C.primary;
+    roundRectPath(ctx, -11 * k, -3 * k, 22 * k, 14 * k, 2 * k); ctx.fill();
+    ctx.fillStyle = C.primaryDark;
+    roundRectPath(ctx, -13 * k, -8 * k, 26 * k, 6 * k, 2 * k); ctx.fill();
+    ctx.fillStyle = '#ffd23f';
+    ctx.fillRect(-2 * k, -8 * k, 4 * k, 19 * k);
+    ctx.strokeStyle = '#ffd23f'; ctx.lineWidth = 2.4 * k;
+    ctx.beginPath(); ctx.ellipse(-5 * k, -11 * k, 5 * k, 3 * k, 0.4, 0, Math.PI * 2); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(5 * k, -11 * k, 5 * k, 3 * k, -0.4, 0, Math.PI * 2); ctx.stroke();
+  },
   home(ctx, s) {
     const k = s / 44;
     ctx.fillStyle = GameConfig.colors.primaryDark;

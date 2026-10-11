@@ -1,0 +1,33 @@
+{
+  "description": "《美少女合成》微信小游戏 —— 由 npm run build:wechat 生成",
+  "projectname": "美少女合成",
+  "appid": "wx6def2bda0bd75e11",
+  "compileType": "game",
+  "libVersion": "latest",
+  "setting": {
+    "es6": true,
+    "enhance": true,
+    "urlCheck": true,
+    "minified": true,
+    "postcss": false,
+    "newFeature": true,
+    "uploadWithSourceMap": false
+  },
+  "condition": {},
+  "packOptions": {
+    "ignore": [
+      {
+        "type": "folder",
+        "value": "上架资料"
+      },
+      {
+        "type": "suffix",
+        "value": ".md"
+      },
+      {
+        "type": "suffix",
+        "value": ".txt"
+      }
+    ]
+  }
+}

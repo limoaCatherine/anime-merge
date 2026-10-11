@@ -9,7 +9,7 @@ export class HUD {
    * @param {object} rules 难度规则
    * @param {{onPause:Function, onMute:Function, onTidy?:Function}} handlers
    */
-  constructor(game, rules, { onPause, onMute, onTidy }) {
+  constructor(game, rules, { onPause, onMute, onTidy, tidyAvailable = false }) {
     this.game = game;
     this.rules = rules;
     this.pauseBtn = new Button({ x: 444, y: 48, w: 46, h: 46, style: 'icon', icon: Icons.pause, onClick: onPause });
@@ -17,7 +17,8 @@ export class HUD {
       this.muteBtn.icon = Icons.sound(onMute());
     } });
     this.buttons = [this.pauseBtn, this.muteBtn];
-    if (rules.tidyUses > 0 && onTidy) {
+    // 「整理」按钮：本难度有整理次数，或者可以看激励视频 / 侧边栏奖励获得次数时显示
+    if ((rules.tidyUses > 0 || tidyAvailable) && onTidy) {
       this.tidyBtn = new Button({ x: 378, y: 48, w: 62, h: 62, style: 'icon', icon: Icons.broom, label: '整理', fontSize: 13, badge: rules.tidyUses, onClick: onTidy });
       this.buttons.unshift(this.tidyBtn);
     }
@@ -26,12 +27,14 @@ export class HUD {
     this.lastScore = 0;
   }
 
-  update(dt, score, { tidyUses, canTidy } = {}) {
+  update(dt, score, { tidyUses, canTidy, tidyAd = false } = {}) {
     if (score !== this.lastScore) { this.scorePulse = 1; this.lastScore = score; }
     if (this.scorePulse > 0) this.scorePulse = Math.max(0, this.scorePulse - dt * 4);
     if (this.tidyBtn) {
-      this.tidyBtn.badge = tidyUses;
+      // 次数用完但可以看视频 +1：角标显示「▶」(看视频)
+      this.tidyBtn.badge = tidyAd ? '▶' : tidyUses;
       this.tidyBtn.enabled = !!canTidy;
+      this.tidyBtn.adMode = !!tidyAd;
     }
   }
 

@@ -4,7 +4,7 @@ import { Button } from './Button.js';
 import { drawPanel, drawText, drawPortrait, drawStar, easing } from './draw.js';
 
 export class VictoryPanel {
-  constructor(game, { onContinue, onRetry, onMenu }) {
+  constructor(game, { onContinue, onRetry, onMenu, onShare = null, shareLabel = '分享精彩片段' }) {
     this.game = game;
     const cx = game.width / 2;
     this.buttons = [
@@ -12,6 +12,11 @@ export class VictoryPanel {
       new Button({ x: cx, y: 684, w: 220, h: 56, label: '再来一局', style: 'secondary', fontSize: 22, onClick: onRetry }),
       new Button({ x: cx, y: 758, w: 220, h: 56, label: '返回菜单', style: 'secondary', fontSize: 22, onClick: onMenu }),
     ];
+    // 抖音：分享本局录屏；微信：转发给好友
+    if (onShare) {
+      this.shareBtn = new Button({ x: cx, y: 834, w: 240, h: 52, label: shareLabel, style: 'secondary', fontSize: 20, onClick: onShare });
+      this.buttons.push(this.shareBtn);
+    }
     this.buttons.forEach((b) => { b.audio = game.audio; });
   }
 
@@ -28,7 +33,7 @@ export class VictoryPanel {
     ctx.translate(w / 2, h / 2);
     ctx.scale(k, k);
     ctx.translate(-w / 2, -h / 2);
-    drawPanel(ctx, 50, 190, w - 100, 610, 30);
+    drawPanel(ctx, 50, 190, w - 100, this.shareBtn ? 680 : 610, 30);
     ctx.fillStyle = '#ffd23f';
     for (let i = 0; i < 5; i++) {
       const a = t * 1.5 + (i / 5) * Math.PI * 2;

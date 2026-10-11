@@ -101,7 +101,7 @@ async function runGame(page, difficulty, seed) {
 }
 
 const browser = await chromium.launch();
-const url = pathToFileURL(path.join(root, 'dist/index.html')).href;
+const url = pathToFileURL(path.join(root, 'dist/index.html')).href + '?noads';
 const jobs = [];
 for (const d of DIFFS) for (let i = 0; i < GAMES; i++) jobs.push({ d, seed: 1000 + i * 7919 });
 const results = [];

@@ -19,9 +19,9 @@ const electronVersion = require('electron/package.json').version;
 export const APP = {
   productName: '美少女合成',
   exeName: '美少女合成',
-  company: '上海盖姆艾尔网络科技有限公司',
+  company: '狸猫',
   description: '美少女合成 AnimeMerge - 二次元美少女物理合成小游戏',
-  copyright: `Copyright © 2026 上海盖姆艾尔网络科技有限公司`,
+  copyright: `Copyright © 2026 狸猫`,
   version: pkg.version,
   appId: 'com.gamel.animemerge',
 };
@@ -83,7 +83,8 @@ async function main() {
   if (isWin) {
     const exe = path.join(finalDir, `${APP.exeName}.exe`);
     await embedWinResources(exe, path.join(root, 'assets/icons/app.ico'), APP);
-    // 默认 LICENSE 文件保留 (Electron/Chromium 许可证)；删掉无用的 version 文件以外不做改动
+    // 默认 LICENSE 文件保留 (Electron/Chromium 许可证)；语音模型等第三方授权文本放到 exe 旁的 licenses/
+    await copyDir(path.join(root, 'docs/licenses'), path.join(finalDir, 'licenses'));
     console.log(`[package] 完成: ${path.relative(root, exe)}`);
   } else {
     console.log(`[package] 完成: ${path.relative(root, finalDir)}/anime-merge`);

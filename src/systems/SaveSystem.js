@@ -1,4 +1,4 @@
-// 存档系统：使用 localStorage 持久化各难度最高分、最高合成等级、通关记录与设置。
+// 存档系统：通过平台层存储 (浏览器 localStorage / 抖音 tt.setStorageSync) 持久化各难度最高分、最高合成等级、通关记录与设置。
 // 隐私模式等无法写入时自动退化为内存存储。
 
 // 设置版本：默认音量等设置调整后提升此版本，旧存档中的相关设置会被迁移/丢弃 (成绩不受影响)
@@ -11,8 +11,9 @@ const SETTINGS_MIGRATIONS = {
 };
 
 export class SaveSystem {
-  constructor(key) {
+  constructor(key, platform) {
     this.key = key;
+    this.platform = platform;
     this.data = {
       highScores: {},    // { easy: 0, normal: 0, hard: 0 }
       bestLevels: {},
@@ -26,11 +27,11 @@ export class SaveSystem {
     let loaded = false;
     this.available = true;
     try {
-      const raw = window.localStorage.getItem(key);
+      const raw = platform.storageGet(key);
       if (raw) { Object.assign(this.data, JSON.parse(raw)); loaded = true; }
     } catch (err) {
       this.available = false;
-      console.warn('[SaveSystem] localStorage 不可用，存档仅在本次运行中有效');
+      console.warn('[SaveSystem] 存储不可用，存档仅在本次运行中有效');
     }
     // 兼容 1.0 版本的单一最高分 -> 归入"普通"
     if (typeof this.data.highScore === 'number') {
@@ -68,7 +69,7 @@ export class SaveSystem {
   flush() {
     if (!this.available) return;
     try {
-      window.localStorage.setItem(this.key, JSON.stringify(this.data));
+      this.platform.storageSet(this.key, JSON.stringify(this.data));
     } catch (_) {
       this.available = false;
     }

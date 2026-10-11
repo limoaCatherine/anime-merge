@@ -1,7 +1,10 @@
-// 音频系统：全部音效由 WebAudio 实时合成 (柔和、可爱风格)，无需音频文件。
+// 音频系统：音效由 WebAudio 实时合成 (柔和、可爱风格)，浏览器/桌面版无需音频文件。
+// 抖音小游戏不保证 WebAudio：改为播放「预渲染」的同款音效 wav (tools/render_sfx.mjs 用这里同一份合成代码离线渲染，
+// 文件在 assets/audio/sfx/，清单见 config/SfxManifest.js)，通过平台层 createAudio (tt.createInnerAudioContext) 播放。
 // 自己订阅玩法事件 (drop / merge / stone:* / timer:tick …)，场景无需关心音效。
 // 浏览器要求用户交互后才能出声，因此在第一次点击/按键时解锁。
 import { AudioConfig } from '../config/AudioConfig.js';
+import { SFX_FILES } from '../config/SfxManifest.js';
 
 // 五声音阶 (半音)，合成等级越高音越高，听起来始终和谐
 const PENTA = [0, 2, 4, 7, 9, 12, 14, 16, 19, 21, 24, 26];
@@ -9,10 +12,12 @@ const C5 = 523.25;
 const note = (i) => C5 * Math.pow(2, PENTA[Math.max(0, Math.min(PENTA.length - 1, i))] / 12);
 
 export class AudioSystem {
-  constructor(events, save, mixer) {
+  constructor(events, save, mixer, platform = null) {
     this.events = events;
     this.save = save;
+    this.platform = platform;
     this.ctx = null;
+    this.samples = null;             // 预渲染音效模式：{ key: { clips: AudioClip[], next, gain } }
     this.master = null;
     this.mixer = mixer;              // 音量由 MixerSystem 决定 (总音量 × 音效声道)
     this.muted = !!save.get('muted', false);
@@ -20,6 +25,7 @@ export class AudioSystem {
     events.on('mixer:change', () => {
       if (this.master && !this.muted) this.master.gain.setTargetAtTime(this.volume, this.ctx.currentTime, 0.02);
     });
+    if (platform && platform.preferSampledSfx) this.initSamples();
     events.on('input:down', () => this.unlock());
     events.on('input:key', () => this.unlock());
 
@@ -34,6 +40,7 @@ export class AudioSystem {
     events.on('stone:hit', () => this.play('stoneHit'));
     events.on('stone:break', () => this.play('stoneBreak'));
     events.on('item:tidy', () => this.play('tidy'));
+    events.on('game:revive', () => this.play('tidy'));
     events.on('goal:reached', () => this.play('victory'));
     events.on('game:over', (e) => { this.play('gameover'); if (e.isNewRecord) this.play('record'); });
   }
@@ -43,16 +50,12 @@ export class AudioSystem {
   }
 
   unlock() {
+    if (this.samples) return;
     try {
       if (!this.ctx) {
-        const AC = window.AudioContext || window.webkitAudioContext;
-        if (!AC) return;
-        this.ctx = new AC();
-        this.master = this.ctx.createGain();
-        this.master.gain.value = this.muted ? 0 : this.volume;
-        const comp = this.ctx.createDynamicsCompressor();
-        this.master.connect(comp);
-        comp.connect(this.ctx.destination);
+        const ctx = this.platform ? this.platform.createWebAudioContext() : null;
+        if (!ctx) { this.initSamples(); return; }
+        this.attachContext(ctx);
       }
       if (this.ctx.state === 'suspended') this.ctx.resume();
     } catch (err) {
@@ -60,16 +63,62 @@ export class AudioSystem {
     }
   }
 
+  /** 建立 WebAudio 输出链 (master 增益 → 压缩器 → 输出)。tools/render_sfx.mjs 也用它接 OfflineAudioContext */
+  attachContext(ctx, gain = null) {
+    this.ctx = ctx;
+    this.master = ctx.createGain();
+    this.master.gain.value = gain !== null ? gain : (this.muted ? 0 : this.volume);
+    const comp = ctx.createDynamicsCompressor();
+    this.master.connect(comp);
+    comp.connect(ctx.destination);
+  }
+
+  /** 预渲染音效模式 (抖音)：为每个音效建立一个播放器 */
+  initSamples() {
+    if (this.samples || !this.platform || !this.platform.createAudio) return;
+    const samples = {};
+    for (const [key, f] of Object.entries(SFX_FILES)) {
+      const clips = [];
+      const n = f.poly || 1;
+      for (let i = 0; i < n; i++) {
+        const c = this.platform.createAudio(f.file, { loop: false });
+        if (c) clips.push(c);
+      }
+      samples[key] = { clips, next: 0, gain: f.gain || 1 };
+    }
+    this.samples = samples;
+    this.sampleLog = [];             // 调试/测试：最近播放的音效
+  }
+
+  /** 播放预渲染音效：音量与 WebAudio 版一致 (文件按 gain 倍归一化，播放时除回去) */
+  playSample(key) {
+    const s = this.samples && this.samples[key];
+    if (!s || !s.clips.length) return false;
+    const clip = s.clips[s.next];
+    s.next = (s.next + 1) % s.clips.length;
+    const v = this.volume / (AudioConfig.sfxVolume * s.gain);
+    try {
+      clip.stop();
+      clip.volume = Math.max(0, Math.min(1, v));
+      const pr = clip.play();
+      if (pr && pr.catch) pr.catch(() => {});
+    } catch (_) { return false; }
+    this.sampleLog.push(key);
+    if (this.sampleLog.length > 50) this.sampleLog.shift();
+    return true;
+  }
+
   toggleMute() {
     this.muted = !this.muted;
     this.save.set('muted', this.muted);
+    if (this.muted && this.samples) for (const s of Object.values(this.samples)) s.clips.forEach((c) => { try { c.stop(); } catch (_) { /* ignore */ } });
     if (this.master) this.master.gain.setTargetAtTime(this.muted ? 0 : this.volume, this.ctx.currentTime, 0.02);
     this.events.emit('audio:mute', this.muted);
     return this.muted;
   }
 
   get ready() {
-    return this.ctx && this.master && !this.muted;
+    return !this.muted && (!!this.samples || !!(this.ctx && this.master));
   }
 
   tone({ freq = 440, freqEnd = null, type = 'sine', dur = 0.15, vol = 0.3, delay = 0, attack = 0.006 }) {
@@ -114,13 +163,33 @@ export class AudioSystem {
     }
   }
 
+  /** 音效名 + 参数 → 预渲染文件的 key (merge 按等级、tick 区分最后一秒) */
+  static sampleKey(name, opts = {}) {
+    if (name === 'merge') return `merge_${Math.max(0, Math.min(11, opts.level || 1))}`;
+    if (name === 'tick') return opts.last ? 'tick_last' : 'tick';
+    return name;
+  }
+
+  /** 预渲染的全部音效 (tools/render_sfx.mjs 使用)：[key, name, opts, seconds] */
+  static sampleList() {
+    const list = [['click', 'click', {}, 0.3], ['drop', 'drop', {}, 0.3]];
+    for (let lv = 0; lv <= 11; lv++) list.push([`merge_${lv}`, 'merge', { level: lv }, 0.9]);
+    list.push(['bonus', 'bonus', {}, 1.4], ['victory', 'victory', {}, 1.6], ['start', 'start', {}, 0.9],
+      ['gameover', 'gameover', {}, 1.3], ['record', 'record', {}, 1.9], ['warn', 'warn', {}, 0.25],
+      ['tick', 'tick', {}, 0.2], ['tick_last', 'tick', { last: true }, 0.2], ['tidy', 'tidy', {}, 0.9],
+      ['stoneWarn', 'stoneWarn', {}, 0.4], ['stoneSpawn', 'stoneSpawn', {}, 0.8], ['stoneHit', 'stoneHit', {}, 0.3],
+      ['stoneBreak', 'stoneBreak', {}, 0.8]);
+    return list;
+  }
+
   /** 播放命名音效 */
   play(name, opts = {}) {
     if (!this.ready) return;
     // 同名音效节流，避免连锁合成时爆音
-    const now = this.ctx.currentTime;
+    const now = this.samples ? this.platform.now() / 1000 : this.ctx.currentTime;
     if (this.lastPlay[name] && now - this.lastPlay[name] < 0.035) return;
     this.lastPlay[name] = now;
+    if (this.samples) { this.playSample(AudioSystem.sampleKey(name, opts)); return; }
 
     switch (name) {
       case 'click':

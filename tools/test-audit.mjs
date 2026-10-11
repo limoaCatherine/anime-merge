@@ -15,7 +15,7 @@ const page = await browser.newPage({ viewport: { width: 540, height: 960 } });
 const errors = [];
 page.on('pageerror', (e) => errors.push(String(e)));
 page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
-await page.goto(pathToFileURL(path.join(root, 'dist/index.html')).href);
+await page.goto(pathToFileURL(path.join(root, 'dist/index.html')).href + '?noads');
 await page.waitForFunction(() => window.__ANIME_MERGE__ && window.__ANIME_MERGE__.scenes.currentName === 'menu' && !window.__ANIME_MERGE__.scenes.transitioning, null, { timeout: 15000 });
 
 // 测试辅助：冻结 / 恢复主循环的场景更新，手动推进；固定随机种子

@@ -14,6 +14,18 @@ export class ItemSystem {
     return this.maxUses > 0;
   }
 
+  /** 额外获得次数 (看激励视频 / 侧边栏奖励) */
+  grant(n = 1) {
+    this.uses += n;
+    this.maxUses = Math.max(this.maxUses, this.uses);
+    this.events.emit('item:grant', { uses: this.uses, added: n });
+  }
+
+  /** 场上是否有可以整理的角色 */
+  get hasTargets() {
+    return this.world.characters.some((c) => !c.merging && !c.removed);
+  }
+
   canUseTidy() {
     return this.uses > 0 && this.world.characters.some((c) => !c.merging && !c.removed);
   }

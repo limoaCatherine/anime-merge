@@ -9,6 +9,8 @@ export const AudioConfig = {
       { src: 'assets/audio/bgm/bgm_main.ogg', type: 'audio/ogg; codecs="vorbis"' },
       { src: 'assets/audio/bgm/bgm_main.mp3', type: 'audio/mpeg' },
     ],
+    // 抖音 (只有 mp3，循环有空隙)：「一遍 + 开头 4 秒」的 mp3，两个播放器交替 + 交叉淡化实现无缝循环 (tools/make_douyin_bgm.py)
+    seamless: { src: 'assets/audio/bgm/bgm_main_loop.mp3', loopLength: 68.571429, crossfade: 0.15, lead: 0.02 },
     title: '星糖午后 (Starlight Sugar Afternoon)',
     volume: 0.15,           // BGM 的 100% 音量 (较低，保证台词清晰)；1.4 版为 0.28
     duck: 0.55,             // 台词播放时 BGM 降到 55% (约 -5 dB)

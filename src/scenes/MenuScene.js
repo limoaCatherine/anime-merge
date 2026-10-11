@@ -6,6 +6,7 @@ import { DIFFICULTIES, DIFFICULTY_ORDER, DEFAULT_DIFFICULTY } from '../config/Di
 import { Button, Icons } from '../ui/Button.js';
 import { CreditsPanel } from '../ui/CreditsPanel.js';
 import { SettingsPanel } from '../ui/SettingsPanel.js';
+import { SidebarPanel } from '../ui/SidebarPanel.js';
 import { drawBackground, drawText, drawPanel, drawPortrait } from '../ui/draw.js';
 
 export class MenuScene extends Scene {
@@ -42,6 +43,14 @@ export class MenuScene extends Scene {
     } });
     this.settingsBtn = new Button({ x: 40, y: 40, w: 46, h: 46, style: 'icon', icon: Icons.mixer, onClick: () => { this.settings.sync(); this.showSettings = true; } });
     this.buttons = [...this.tabs, this.startBtn, this.helpBtn, this.voiceBtn, this.bgmBtn, this.creditsBtn, this.muteBtn, this.settingsBtn];
+    // 抖音：侧边栏复访奖励入口 (仅当宿主支持跳转侧边栏时显示)
+    this.showSidebar = false;
+    this.sidebar = new SidebarPanel(this.game, { onClose: () => { this.showSidebar = false; } });
+    this.sidebarBtn = new Button({ x: 40, y: 100, w: 52, h: 58, style: 'icon', icon: Icons.gift, label: '奖励', fontSize: 12, visible: false, onClick: () => { this.sidebar.msg = ''; this.showSidebar = true; } });
+    this.buttons.push(this.sidebarBtn);
+    this.game.platform.checkSidebar().then((ok) => { this.sidebarBtn.visible = !!ok; });
+    // 从侧边栏 (热) 启动回到游戏：自动打开奖励面板
+    this.listen('app:visible', () => { if (this.sidebarBtn.visible && this.game.platform.launchedFromSidebar && !this.sidebar.claimedToday) this.showSidebar = true; });
     [...this.buttons, this.closeHelpBtn].forEach((b) => { b.audio = this.game.audio; });
     this.refreshVoiceLabel();
     this.selectDifficulty(this.difficulty, true);
@@ -69,6 +78,7 @@ export class MenuScene extends Scene {
   }
 
   activeButtons() {
+    if (this.showSidebar) return this.sidebar.buttons;
     if (this.showSettings) return [...this.settings.buttons, this.muteBtn];
     if (this.showCredits) return this.credits.buttons;
     return this.showHelp ? [this.closeHelpBtn] : this.buttons;
@@ -82,6 +92,7 @@ export class MenuScene extends Scene {
 
   onKeyDown(e) {
     if (this.showSettings) { if (e.code === 'Escape' || e.code === 'Enter') this.showSettings = false; return; }
+    if (this.showSidebar) { if (e.code === 'Escape') this.showSidebar = false; return; }
     if (this.showCredits) { if (e.code === 'Enter' || e.code === 'Space' || e.code === 'Escape') this.showCredits = false; return; }
     if (this.showHelp) { if (e.code === 'Enter' || e.code === 'Space' || e.code === 'Escape') this.showHelp = false; return; }
     if (e.code === 'Enter' || e.code === 'Space') this.startGame();
@@ -116,8 +127,10 @@ export class MenuScene extends Scene {
     const bob = Math.sin(this.time * 2) * 6;
     drawPortrait(ctx, assets.getImage(CHARACTERS[10].key), w / 2, 190 + bob, 86);
     drawText(ctx, `《${GameConfig.title}》`, w / 2, 324 + bob * 0.5, { size: 56, color: C.primary, stroke: '#fff', strokeWidth: 12, shadow: 'rgba(200,80,150,0.4)' });
-    drawText(ctx, 'AnimeMerge · 合成你的星海女神', w / 2, 380, { size: 20, color: C.secondary, stroke: '#fff', strokeWidth: 5 });
+    drawText(ctx, 'AnimeMerge · 合成你的星海女神', w / 2, 376, { size: 20, color: C.secondary, stroke: '#fff', strokeWidth: 5 });
+    drawText(ctx, `出品：${GameConfig.publisher}`, w / 2, 401, { size: 13, color: '#9a7bb0', weight: 'normal' });
 
+    if (this.showSidebar) { this.sidebar.render(ctx, this.dt); return; }
     if (this.showHelp) { this.renderHelp(ctx, w); return; }
     if (this.showCredits) { this.credits.render(ctx, this.dt); return; }
     if (this.showSettings) { this.settings.render(ctx, this.dt); this.muteBtn.render(ctx, this.dt); return; }

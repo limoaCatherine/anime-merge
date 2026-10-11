@@ -68,7 +68,7 @@ async function testDist(browser) {
   const sizes = voiceFiles.map((f) => (fs.existsSync(f) ? fs.statSync(f).size : 0));
   check(sizes.every((s) => s > 5000), `11 个语音文件存在于 dist (${sizes.map((s) => Math.round(s / 1024) + 'K').join(' ')})`);
 
-  const url = pathToFileURL(path.join(root, 'dist/index.html')).href;
+  const url = pathToFileURL(path.join(root, 'dist/index.html')).href + '?noads';
   const { page, errors } = await openPage(browser, url);
   await waitScene(page, 'menu');
   check(true, '加载完成并进入主菜单');
@@ -454,7 +454,7 @@ async function testDev(browser) {
   const server = spawn(process.execPath, [path.join(root, 'tools/serve.js'), String(port)], { stdio: 'ignore' });
   await sleep(600);
   try {
-    const { page, errors } = await openPage(browser, `http://localhost:${port}/index.html`);
+    const { page, errors } = await openPage(browser, `http://localhost:${port}/index.html?noads`);
     await waitScene(page, 'menu');
     await tap(page, 402, 548);
     await tap(page, 270, 656);

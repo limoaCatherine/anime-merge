@@ -3,6 +3,7 @@
 import { Scene } from '../core/Scene.js';
 import { StateMachine } from '../core/StateMachine.js';
 import { GameConfig } from '../config/GameConfig.js';
+import { PlatformConfig } from '../config/PlatformConfig.js';
 import { CHARACTERS, getCharacterDef } from '../config/LevelConfig.js';
 import { resolveRules, DEFAULT_DIFFICULTY } from '../config/DifficultyConfig.js';
 import { PhysicsSystem } from '../systems/PhysicsSystem.js';
@@ -43,7 +44,11 @@ export class GameScene extends Scene {
     this.score = new ScoreSystem(events);
     this.effects = new EffectSystem(events);
     this.dropTimer = new DropTimerSystem(events, rules.dropTimer);
-    this.items = new ItemSystem(events, this, rules.tidyUses);
+    // 侧边栏复访奖励：下一局额外的「整理」次数 (领取后存档，开局时使用)
+    const bonusTidy = game.save.get('bonusTidy', 0) || 0;
+    if (bonusTidy > 0) game.save.set('bonusTidy', 0);
+    this.bonusTidy = bonusTidy;
+    this.items = new ItemSystem(events, this, rules.tidyUses + bonusTidy);
     this.obstacles = new ObstacleSystem(events, this.physics, rules.stone, rules.container, this);
     this.goal = new GoalSystem(events, rules.goalLevel);
     this.subtitles = new SubtitleSystem(events, rules.container);
@@ -58,11 +63,22 @@ export class GameScene extends Scene {
     this.best = game.save.highScore(this.difficulty);
     this.submitted = false;
     this.leaving = false;
+    // 激励视频：每局 1 次复活、1 次 +1 整理 (平台不支持广告时为 0，不显示入口)
+    // 抖音未填广告位 (流量主要上线后才能开通)：复活改为免费的「再试一次」(每局 1 次)，+1 整理隐藏
+    const adsOn = game.ads.available;
+    this.freeRevive = !adsOn && !!game.platform.freeRevive;
+    this.revivesLeft = (adsOn || this.freeRevive) ? PlatformConfig.ads.revivePerGame : 0;
+    this.adTidyLeft = adsOn ? PlatformConfig.ads.tidyPerGame : 0;
+    this.reviveMsg = '';
+    this.adPending = false;
+    this.videoPath = null;
+    this.videoPromise = null;
 
     this.hud = new HUD(game, rules, {
       onPause: () => this.pause(),
       onMute: () => game.audio.toggleMute(),
-      onTidy: () => { if (this.fsm.is('playing')) this.items.useTidy(); },
+      onTidy: () => this.onTidyButton(),
+      tidyAvailable: adsOn || bonusTidy > 0,
     });
 
     const cx = game.width / 2;
@@ -85,13 +101,31 @@ export class GameScene extends Scene {
       onContinue: () => this.continueEndless(),
       onRetry: restart,
       onMenu: () => game.scenes.change('menu'),
+      onShare: game.platform.canRecord || game.platform.canShare ? () => this.shareVideo() : null,
+      shareLabel: game.platform.canRecord ? '分享精彩片段' : '分享给好友',
     });
+    // 复活面板 (看激励视频复活)
+    this.reviveWatchBtn = new Button({ x: cx, y: 560, w: 280, h: 70, label: '▶ 看视频复活', fontSize: 28, onClick: () => this.watchReviveAd() });
+    this.reviveSkipBtn = new Button({ x: cx, y: 648, w: 220, h: 56, label: '不了，去结算', style: 'secondary', fontSize: 22, onClick: () => this.declineRevive() });
+    this.reviveButtons = [this.reviveWatchBtn, this.reviveSkipBtn];
+    this.reviveButtons.forEach((b) => { b.audio = game.audio; });
 
     this.fsm = new StateMachine(this)
       .add('playing', {})
       .add('paused', {})
       .add('victory', {
-        enter() { game.save.markCleared(this.difficulty); this.aiming = false; this.merge.cancelPending(); },
+        enter() { game.save.markCleared(this.difficulty); this.aiming = false; this.merge.cancelPending(); this.stopRecording(); },
+      })
+      .add('revive', {
+        // 堆满了：先询问是否看激励视频复活 (每局 1 次)；放弃才真正结束
+        enter() {
+          this.aiming = false;
+          this.merge.cancelPending();
+          this.reviveMsg = '';
+          this.reviveWatchBtn.label = this.freeRevive ? '再试一次' : '▶ 看视频复活';
+          events.emit('game:hold');
+          events.emit('revive:offer', { difficulty: this.difficulty });
+        },
       })
       .add('over', {
         enter() {
@@ -101,6 +135,7 @@ export class GameScene extends Scene {
           const isNewRecord = this.submitScore();
           events.emit('game:over', { score: this.score.score, isNewRecord, difficulty: this.difficulty });
           this.isNewRecord = isNewRecord;
+          this.stopRecording();
         },
         update() {
           if (this.fsm.time > 1.4 && !this.leaving) {
@@ -114,6 +149,7 @@ export class GameScene extends Scene {
               maxLevel: this.score.maxLevel,
               merges: this.score.merges,
               cleared: this.goal.reached,
+              video: this.videoPromise,       // 录屏 (抖音)：Promise<videoPath|null>
             }, { transition: false });
           }
         },
@@ -130,12 +166,109 @@ export class GameScene extends Scene {
     this.listen('goal:reached', () => { if (this.fsm.is('playing')) this.fsm.change('victory'); });
 
     events.emit('game:start', { difficulty: this.difficulty, x: cx, y: 330 });
+    // 抖音：每局开始自动录屏，结束 / 通关时可「分享精彩片段」
+    if (game.platform.canRecord) game.platform.startRecording();
+  }
+
+  // ---- 录屏分享 (抖音) ----
+  stopRecording() {
+    const p = this.game.platform;
+    if (!p.canRecord) return null;
+    if (!this.videoPromise) {
+      this.videoPromise = p.stopRecording().then((path) => { this.videoPath = path; return path; });
+    }
+    return this.videoPromise;
+  }
+
+  shareVideo() {
+    const p = this.game.platform;
+    if (!p.canRecord) {   // 微信：普通转发 (好友 / 群)
+      return p.shareGame({ score: this.score.score, maxLevel: this.score.maxLevel })
+        .then((ok) => { this.game.events.emit('share:game', { ok, placement: 'victory' }); return ok; });
+    }
+    const go = (path) => {
+      if (!path) { p.toast('录屏太短或不可用，暂时无法分享'); return false; }
+      return p.shareVideo(path).then((ok) => { this.game.events.emit('share:video', { ok, placement: 'victory' }); return ok; });
+    };
+    return (this.videoPromise || Promise.resolve(this.videoPath)).then(go);
+  }
+
+  // ---- 激励视频 ----
+  get canOfferRevive() {
+    return this.revivesLeft > 0 && (this.game.ads.available || this.freeRevive);
+  }
+
+  watchReviveAd() {
+    if (!this.fsm.is('revive') || this.adPending) return;
+    if (this.freeRevive) { this.revive(); return; }      // 没有广告：免费再试一次
+    this.adPending = true;
+    this.reviveMsg = '';
+    this.game.ads.showRewardedAd('revive').then((ok) => {
+      this.adPending = false;
+      if (!this.fsm.is('revive')) return;
+      if (ok) this.revive();
+      else this.reviveMsg = '视频没有看完，不能复活哦';
+    });
+  }
+
+  declineRevive() {
+    if (!this.fsm.is('revive') || this.adPending) return;
+    this.fsm.change('over');
+  }
+
+  /** 复活：清掉顶部 (警戒线附近及以上) 的角色和石头；清得太少时再整理掉最小等级的角色，然后继续 */
+  revive() {
+    const band = GameConfig.dangerY + PlatformConfig.ads.reviveClearBand;
+    const points = [];
+    const mark = (c) => points.push({ x: c.x, y: c.y, r: c.currentRadius, color: c.def ? c.def.ringColor : '#a49eb0' });
+    const top = this.characters.filter((c) => !c.removed && c.y - c.currentRadius < band);
+    top.forEach((c) => { mark(c); this.removeCharacter(c); });
+    const stones = this.obstacles.stones.filter((st) => st.y - st.currentRadius < band);
+    stones.forEach((st) => { mark(st); this.obstacles.remove(st); });
+    let removed = top.length + stones.length;
+    if (removed < 3) {
+      const alive = this.characters.filter((c) => !c.removed && !c.merging);
+      if (alive.length) {
+        const lv = Math.min(...alive.map((c) => c.level));
+        alive.filter((c) => c.level === lv).forEach((c) => { mark(c); this.removeCharacter(c); removed++; });
+      }
+    }
+    for (const c of [...this.characters, ...this.obstacles.stones]) c.dangerTime = 0;
+    this.dangerLevel = 0;
+    this.dropTimer.reset();
+    this.revivesLeft--;
+    this.merge.enabled = true;
+    this.fsm.change('playing');
+    this.game.events.emit('game:unhold');
+    this.game.events.emit('game:revive', { removed, points });
+  }
+
+  /** 整理按钮：有次数直接用；次数用完时可以看激励视频 +1 次并立即使用 (每局 1 次) */
+  onTidyButton() {
+    if (!this.fsm.is('playing') || this.adPending) return;
+    if (this.items.uses > 0) { this.items.useTidy(); return; }
+    if (this.adTidyLeft > 0 && this.items.hasTargets && this.game.ads.available) {
+      this.adPending = true;
+      this.aiming = false;
+      this.game.ads.showRewardedAd('tidy').then((ok) => {
+        this.adPending = false;
+        if (!ok) { this.game.platform.toast('视频没有看完，没有获得奖励'); return; }
+        this.adTidyLeft--;
+        this.items.grant(1);
+        if (this.fsm.is('playing')) this.items.useTidy();
+      });
+    }
+  }
+
+  get tidyAdReady() {
+    return this.items.uses === 0 && this.adTidyLeft > 0 && this.game.ads.available;
   }
 
   exit() {
     // 中途离开 (如胜利后返回菜单) 也记录成绩
     if (!this.submitted && this.score.score > 0) this.submitScore();
     this.game.events.emit('game:exit');   // 语音系统据此停止并清空排队的台词
+    if (this.game.platform.canRecord && !this.videoPromise) this.game.platform.stopRecording();
     this.characters.forEach((c) => c.destroy());
     this.characters = [];
     this.merge.destroy();
@@ -221,12 +354,15 @@ export class GameScene extends Scene {
     this.dangerLevel = 0;
     this.dropTimer.reset();
     this.fsm.change('playing');
+    // 继续无尽模式：重新开始录屏
+    if (this.game.platform.canRecord) { this.videoPromise = null; this.videoPath = null; this.game.platform.startRecording(); }
   }
 
   activeButtons() {
     if (this.fsm.is('paused')) return this.showSettings ? this.settings.buttons : this.pauseButtons;
     if (this.fsm.is('victory')) return this.fsm.time > 0.8 ? this.victoryPanel.buttons : [];
     if (this.fsm.is('over')) return [];
+    if (this.fsm.is('revive')) return this.adPending ? [] : this.reviveButtons;
     return this.hud.buttons;
   }
 
@@ -258,6 +394,11 @@ export class GameScene extends Scene {
   }
 
   onKeyDown(e) {
+    if (this.fsm.is('revive')) {
+      if (e.code === 'Enter' || e.code === 'Space') this.watchReviveAd();
+      if (e.code === 'Escape') this.declineRevive();
+      return;
+    }
     if (this.showSettings && this.fsm.is('paused')) { if (e.code === 'Escape' || e.code === 'Enter') this.showSettings = false; return; }
     if (e.code === 'KeyP' || e.code === 'Escape') {
       if (this.fsm.is('playing')) this.pause(); else this.resume();
@@ -266,7 +407,7 @@ export class GameScene extends Scene {
     if (!this.fsm.is('playing')) return;
     if (e.code === 'ArrowLeft' || e.code === 'KeyA') this.aimTargetX -= 24;
     if (e.code === 'ArrowRight' || e.code === 'KeyD') this.aimTargetX += 24;
-    if (e.code === 'KeyT' && this.items.enabled) this.items.useTidy();
+    if (e.code === 'KeyT' && this.hud.tidyBtn) this.onTidyButton();
     if (e.code === 'Space' || e.code === 'Enter' || e.code === 'ArrowDown') {
       this.aimX = this.aimTargetX;
       this.drop();
@@ -293,7 +434,7 @@ export class GameScene extends Scene {
       this.warnTimer -= dt;
       if (this.warnTimer <= 0) { this.game.events.emit('danger:warn'); this.warnTimer = 0.5 - Math.min(1, this.dangerLevel) * 0.3; }
     }
-    if (worst >= limit) this.fsm.change('over');
+    if (worst >= limit) this.fsm.change(this.canOfferRevive ? 'revive' : 'over');
   }
 
   update(dt) {
@@ -317,7 +458,13 @@ export class GameScene extends Scene {
       this.effects.update(dt);
       this.subtitles.update(dt);
     }
-    this.hud.update(dt, Math.floor(this.score.displayScore), { tidyUses: this.items.uses, canTidy: this.fsm.is('playing') && this.items.canUseTidy() });
+    const playing = this.fsm.is('playing');
+    const tidyAd = playing && this.tidyAdReady;
+    this.hud.update(dt, Math.floor(this.score.displayScore), {
+      tidyUses: this.items.uses,
+      canTidy: playing && !this.adPending && (this.items.canUseTidy() || (tidyAd && this.items.hasTargets)),
+      tidyAd,
+    });
   }
 
   // ---- 渲染 ----
@@ -435,6 +582,28 @@ export class GameScene extends Scene {
       });
     }
     if (this.fsm.is('paused')) this.renderPause(ctx, w, h);
+    if (this.fsm.is('revive')) this.renderRevive(ctx, w, h);
+  }
+
+  renderRevive(ctx, w, h) {
+    const C = GameConfig.colors;
+    const t = this.fsm.time;
+    ctx.save();
+    ctx.globalAlpha = Math.min(1, t * 3);
+    ctx.fillStyle = 'rgba(60,30,80,0.5)';
+    ctx.fillRect(0, 0, w, h);
+    const k = easing.backOut(Math.min(1, t * 2.5));
+    ctx.translate(w / 2, h / 2);
+    ctx.scale(k, k);
+    ctx.translate(-w / 2, -h / 2);
+    drawPanel(ctx, w / 2 - 190, 300, 380, 400, 28);
+    drawText(ctx, '堆满啦！', w / 2, 360, { size: 46, color: C.danger, stroke: '#fff', strokeWidth: 10 });
+    drawText(ctx, `当前得分 ${this.score.score}`, w / 2, 412, { size: 22, color: C.primary });
+    drawText(ctx, this.freeRevive ? '清掉顶部的角色，再给你一次机会' : '看一段视频，清掉顶部的角色继续游戏', w / 2, 456, { size: 17, color: C.text, weight: 'normal' });
+    drawText(ctx, '（每局 1 次）', w / 2, 482, { size: 15, color: '#9a7bb0', weight: 'normal' });
+    if (this.reviveMsg) drawText(ctx, this.reviveMsg, w / 2, 512, { size: 16, color: C.danger });
+    for (const b of this.reviveButtons) b.render(ctx, this.dt);
+    ctx.restore();
   }
 
   renderPause(ctx, w, h) {

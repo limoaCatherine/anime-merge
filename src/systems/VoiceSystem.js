@@ -3,14 +3,15 @@
 //   新的一局 (game:start —— 新游戏 / 重新开始 / 换难度) 时重置
 // - 同一时刻多个角色首次登场：先播放最高等级；其余排队，等当前语音结束后依次播放 (过期则丢弃)
 // - 更高等级的首次登场可以打断正在播放的低等级语音；两句之间有冷却，不会叠音
-// - 使用 HTMLAudioElement 播放 (file:// 与 Electron app.asar 内均可用)
-// - 独立音量 + 独立开关，遵守全局静音；文件加载失败时退回 speechSynthesis (ja-JP)
+// - 通过平台层 createAudio 播放 (浏览器/Electron: HTMLAudioElement；抖音: tt.createInnerAudioContext，文件在分包里)
+// - 独立音量 + 独立开关，遵守全局静音；文件加载失败时退回系统语音合成 (仅浏览器 speechSynthesis，ja-JP)
 // - 发出 voice:start / voice:end 事件 (BgmSystem 据此在台词播放时压低背景音乐)
 import { VOICE_LINES, VoiceConfig } from '../config/VoiceConfig.js';
 
 export class VoiceSystem {
-  constructor(events, save, audio, mixer) {
+  constructor(events, save, audio, mixer, platform) {
     this.events = events;
+    this.platform = platform;
     this.save = save;
     this.audio = audio;              // 用于读取全局静音状态
     this.mixer = mixer;              // 音量由 MixerSystem 决定 (总音量 × 语音声道)
@@ -22,7 +23,6 @@ export class VoiceSystem {
     this.current = null;             // { index, el }
     this.lastPlay = null;            // 最近一次播放结果 (调试/测试用)
     this.history = [];               // 本局播放过的台词序号 (调试/测试用)
-    this.jaVoice = null;
 
     this.held = false;               // 暂停中：不开始新的台词 (排队的台词等待继续)
     events.on('game:start', (e) => {
@@ -39,16 +39,10 @@ export class VoiceSystem {
     events.on('game:hold', () => { this.held = true; });
     events.on('game:unhold', () => { this.held = false; });
     events.on('mixer:change', () => { if (this.current && this.current.el) this.current.el.volume = this.volume; });
-
-    if (typeof window !== 'undefined' && window.speechSynthesis) {
-      const pick = () => {
-        const voices = window.speechSynthesis.getVoices() || [];
-        const ja = voices.filter((v) => /^ja/i.test(v.lang));
-        this.jaVoice = ja.find((v) => /female|nanami|haruka|ayumi|kyoko|mizuki/i.test(v.name)) || ja[0] || null;
-      };
-      pick();
-      if ('onvoiceschanged' in window.speechSynthesis) window.speechSynthesis.onvoiceschanged = pick;
-    }
+    // 看广告期间不开始新台词
+    events.on('ad:open', () => { this.adHeld = true; this.stop(); });
+    events.on('ad:closed', () => { this.adHeld = false; });
+    events.on('app:hidden', () => this.stop());
   }
 
   /** 预加载全部语音，返回 Promise (失败/超时都会 resolve，不阻塞游戏) */
@@ -67,15 +61,13 @@ export class VoiceSystem {
         resolve();
       };
       try {
-        const el = new Audio();
-        el.preload = 'auto';
-        el.addEventListener('canplaythrough', () => finish('ready'), { once: true });
-        el.addEventListener('loadeddata', () => finish('ready'), { once: true });
-        el.addEventListener('error', () => {
-          console.warn(`[VoiceSystem] 语音加载失败，将使用 speechSynthesis: ${line.file}`);
+        const el = this.platform && this.platform.createAudio(line.file, { loop: false });
+        if (!el) { finish('failed'); return; }
+        el.onReady(() => finish('ready'));
+        el.onError(() => {
+          console.warn(`[VoiceSystem] 语音加载失败，将使用系统语音合成: ${line.file}`);
           finish('failed');
-        }, { once: true });
-        el.src = line.file;
+        });
         el.load();
         clip.el = el;
         setTimeout(() => finish('unknown'), timeoutMs); // 未确认也允许尝试播放
@@ -139,12 +131,12 @@ export class VoiceSystem {
   isPlaying() {
     if (!this.current) return false;
     if (this.current.el) return !this.current.el.paused && !this.current.el.ended;
-    return !!(window.speechSynthesis && window.speechSynthesis.speaking);
+    return !!(this.platform && this.platform.speaking);
   }
 
   update(dt) {
     if (this.cooldown > 0) this.cooldown -= dt;
-    if (!this.queue.length || this.held) return;
+    if (!this.queue.length || this.held || this.adHeld) return;
     for (const q of this.queue) q.age += dt;
     this.queue = this.queue.filter((q) => q.age <= VoiceConfig.queueExpire);
     const ready = this.queue.filter((q) => q.age >= VoiceConfig.collectWindow);
@@ -170,7 +162,7 @@ export class VoiceSystem {
     if (clip && clip.el && clip.state !== 'failed') {
       const el = clip.el;
       this.current = { index, el };
-      el.onended = () => this.finish(el);
+      el.onEnded(() => this.finish(el));
       try {
         el.currentTime = 0;
         el.volume = this.volume;
@@ -193,22 +185,17 @@ export class VoiceSystem {
   }
 
   speak(index) {
-    const synth = window.speechSynthesis;
-    if (!synth || typeof window.SpeechSynthesisUtterance === 'undefined') {
-      this.lastPlay = { index, result: 'unsupported' };
-      return;
-    }
     try {
-      synth.cancel();
-      const u = new SpeechSynthesisUtterance(VOICE_LINES[index].tts);
-      u.lang = 'ja-JP';
-      if (this.jaVoice) u.voice = this.jaVoice;
-      u.rate = VoiceConfig.speechRate;
-      u.pitch = VoiceConfig.speechPitch;
-      u.volume = this.volume;
       const cur = { index, el: null };
-      u.onend = () => { if (this.current === cur) { this.current = null; this.events.emit('voice:end', { index }); } };
-      synth.speak(u);
+      const u = this.platform && this.platform.speak(VOICE_LINES[index].tts, {
+        lang: 'ja-JP',
+        voiceHint: /female|nanami|haruka|ayumi|kyoko|mizuki/i,
+        rate: VoiceConfig.speechRate,
+        pitch: VoiceConfig.speechPitch,
+        volume: this.volume,
+        onEnd: () => { if (this.current === cur) { this.current = null; this.events.emit('voice:end', { index }); } },
+      });
+      if (!u) { this.lastPlay = { index, result: 'unsupported' }; return; }
       this.current = cur;
       this.events.emit('voice:start', { index });
       this.lastPlay = { index, result: 'speech' };
@@ -230,8 +217,8 @@ export class VoiceSystem {
     const had = this.current;
     if (this.current && this.current.el) {
       try { this.current.el.pause(); } catch (_) { /* ignore */ }
-    } else if (this.current && window.speechSynthesis) {
-      try { window.speechSynthesis.cancel(); } catch (_) { /* ignore */ }
+    } else if (this.current && this.platform) {
+      this.platform.cancelSpeech();
     }
     this.current = null;
     if (had) this.events.emit('voice:end', { index: had.index });

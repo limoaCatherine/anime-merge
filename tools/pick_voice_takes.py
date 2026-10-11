@@ -83,7 +83,10 @@ def main():
         scored = []
         for t in takes:
             x = pcm16k(t)
-            segs, _ = model.transcribe(x, language='ja', beam_size=5)
+            # 1.7：台词很短 (1.5~3 秒) 且首尾几乎没有留白时 whisper 容易输出空结果，转写前两端各补 0.6 秒静音
+            pad = np.zeros(int(16000 * 0.6), np.float32)
+            segs, _ = model.transcribe(np.concatenate([pad, x, pad]), language='ja', beam_size=5,
+                                      no_speech_threshold=None, log_prob_threshold=None, condition_on_previous_text=False)
             txt = ''.join(s.text for s in segs)
             st, rng = pitch_stats(x)
             scored.append(dict(take=t, cer=round(cer(kana(tts), kana(txt)), 3), asr=txt, st=st, rng=rng, en=energy_dyn(x)))

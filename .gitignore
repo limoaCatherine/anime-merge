@@ -1,31 +1,56 @@
-# 依赖与构建产物
+# 依赖
 node_modules/
+
+# 构建产物 (由 npm run build / build:douyin / build:wechat / package:* 生成)
+# 注意：douyin/ 与 wechat/ 是可直接导入开发者工具的小游戏工程，保留在仓库中
 dist/
+dist-douyin/
+dist-wechat/
 build/
 release/
 out/
+tools/preview/bundle.js
+
+# 安装包 / 压缩包
 *.exe
 *.zip
 *.7z
 *.asar
+*.msi
+*.dmg
 
-# 本地预览打包产物
-tools/preview/bundle.js
-
-# Python 缓存
+# Python
 __pycache__/
 *.pyc
 .venv/
+venv/
 
-# 环境变量 / 密钥
+# 本地语音合成引擎等大型工具 (不入库)
+engines/
+AivisSpeech*/
+aivisspeech*/
+
+# 根目录的临时截图
+/anime-merge-*.png
+/desktop-screenshot.png
+/*-screenshot.png
+
+# 密钥 / 环境变量 (含 miniprogram-ci 代码上传密钥 private.wx*.key)
 .env
 .env.*
 *.pem
 *.key
+*.p12
+private.*.key
+project.private.config.json
 
 # 系统与编辑器
 .DS_Store
 Thumbs.db
+desktop.ini
 .vscode/
 .idea/
 *.log
+
+# 给本机用户的更新说明 (含本地路径，不入库)
+/更新说明-*.txt

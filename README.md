@@ -1,6 +1,6 @@
 # 美少女合成 · AnimeMerge
 
-> 竖屏物理合成小游戏（"合成大西瓜"类）｜HTML5 Canvas + Matter.js｜三档难度｜网页版 + Windows 桌面版
+> 竖屏物理合成小游戏（"合成大西瓜"类）｜HTML5 Canvas + Matter.js｜三档难度｜网页版 + Windows 桌面版 + 抖音小游戏 + 微信小游戏
 
 投放二次元少女头像，两个相同等级的角色碰到一起就合成为更高一级，共 11 级，最高级为「星海女神」。在经典合成玩法上，按难度拆分出投放倒计时、出生池权重、场地宽度、重力和石头障碍等规则，并用自动化机器人模拟验证每个难度的目标达成率。
 
@@ -46,10 +46,16 @@ npm run build          # 构建到 dist/，可直接双击 dist/index.html
 npm test               # 浏览器自动化测试
 npm run desktop        # Electron 桌面版
 npm run package:win    # 打包 Windows x64
+npm run build:douyin   # 抖音小游戏工程 -> douyin/（npm run test:douyin 验证）
+npm run build:wechat   # 微信小游戏工程 -> wechat/（npm run test:wechat 验证）
 node tools/bot-sim.mjs # 难度模拟（需先 build）
 ```
 
 详细的难度表、语音台词、换皮说明见 [docs/README.md](docs/README.md)（其中困难模式的场地宽度与目标等级早于最近一次调整，以 `src/config/DifficultyConfig.js` 为准）。
+
+## 小游戏版（抖音 / 微信）
+
+同一套玩法代码通过平台层 `src/platform/`（Web / Electron / Douyin / Wechat）运行在四个平台上，游戏逻辑里不出现 `window`、`document`、`tt` 或 `wx`。`douyin/` 和 `wechat/` 是可以直接用对应开发者工具导入的小游戏工程，AppID 和广告位 ID 统一在 `src/config/PlatformConfig.js` 中配置。上架流程见 `douyin/抖音上架说明.md` 和 `docs/微信上架说明.md`。
 
 ## 关于开发方式
 

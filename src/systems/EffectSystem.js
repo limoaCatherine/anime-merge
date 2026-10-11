@@ -18,6 +18,7 @@ export class EffectSystem {
       events.on('merge:max', (e) => this.onMaxMerge(e)),
       events.on('score:gain', (e) => this.onScore(e)),
       events.on('item:tidy', (e) => this.onTidy(e)),
+      events.on('game:revive', (e) => this.onTidy({ ...e, text: '复活！继续加油' })),
       events.on('stone:spawn', (e) => this.dust(e.x, e.y, 18)),
       events.on('stone:hit', (e) => { this.dust(e.x, e.y, 10); this.shake(0.15, 3); }),
       events.on('stone:break', (e) => this.onStoneBreak(e)),
@@ -65,12 +66,12 @@ export class EffectSystem {
     }
   }
 
-  onTidy({ points }) {
+  onTidy({ points, text = '整理完成！' }) {
     for (const p of points) {
       this.burst(p.x, p.y, p.color, 12, 160);
       this.rings.push({ x: p.x, y: p.y, r0: p.r * 0.5, r1: p.r * 1.8, life: 0, max: 0.4, color: '#ffffff', width: 5 });
     }
-    this.texts.push({ x: GameConfig.width / 2, y: GameConfig.height * 0.4, text: '整理完成！', life: 0, max: 1.2, color: '#5ccf8a', size: 40, vy: -30 });
+    this.texts.push({ x: GameConfig.width / 2, y: GameConfig.height * 0.4, text, life: 0, max: 1.2, color: '#5ccf8a', size: 40, vy: -30 });
   }
 
   dust(x, y, count) {

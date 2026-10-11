@@ -1,0 +1,72 @@
+凛音エル — 電脳天使工業 BOOTH 版利用規約 (https://dennotenshi.booth.pm/items/5475738 → Google Docs 1WyTx_lfrI-i2BFTlHDVlFTm27iSrLcwpOgHx45lYWhw)，2026-10-11 取得。
+注意：本游戏使用的是 AivisHub 上同一作者 (kokuren / 電脳天使工業) 以 ACML 1.0 发布的模型 f5017410-…；此 BOOTH 规约中「企業などでの利用については…連絡をください」(企业使用请联系 X @wangoroge_333)。
+
+﻿ガイドライン・利用規約
+
+
+本製品の購入、ダウンロード、インストールなどの行為をもって、利用者は本利用規約・ガイドラインに同意したものとみなされます。本データの利用を開始する前に、本利用規約を必ずお読みください。
+
+
+・利用範囲
+ 本利用規約の範囲内で、YouTubeでの配信利用やゲーム実況などを含む、商用利用が許可されます。しかし、著作権や所有権を含むその他の権利の譲渡を意味するものではありません。また、「凛音エル」というキャラクター自体の利用については、この限りではありません。
+
+
+・「凛音エル」について
+ AIを用いた創作や、従来の創作両方を活性化するため、「凛音エル」というキャラクターをゆるく自由に使っていただけたらと思います。ただし、キャラクターの尊厳を著しく傷つけるような行為は控えるようにお願い申し上げます。
+ 成人向けの内容については、「東北ずん子・ずんだもんプロジェクト」のキャラクター利用の手引きを準用します。こっそりと活用するようにしてください。また、企業などでの利用については、電脳天使工業運営のXアカウント（@wangoroge_333）まで連絡をください。
+
+
+本音声素材データの使用は、購入者本人に限り許可されます。転売、複製、第三者への譲渡や共有は禁止されています。しかし、AI音声合成文化を活性化するため、モデルのマージ素材としての利用は許可しています。ただし、あまりに本家「凛音エル」の声にそっくりなものを頒布するのは控えるようにお願いします。
+
+
+・著作権と免責事項
+ 本製品およびその構成要素となる個別の音声素材データの著作権は電脳天使工業に帰属します。ただし、作成された作品やその使用によって生じたいかなる損害についても、電脳天使工業は責任を負いません。
+
+
+・禁止事項
+利用者は、以下の行為を行うことが禁じられています。
+
+
+・本製品の複製や第三者への利用制限などの行為
+・第三者への譲渡や利用権の移転、継承
+・提供者や第三者に損害を与える、またはその可能性のある行為
+・法令や公序良俗に反する行為、政治的、宗教的利用、犯罪行為
+・犯罪行為やその助長、その恐れのある行為
+・本製品を自作であるかのように発言や販売、複製する行為
+・その他、電脳天使工業が不適切と判断する行為
+
+
+利用規約の変更
+電脳天使工業は、事前の通知なく本規約の内容を変更することがあります。
+
+
+本規約の有効期限
+本規約は、製品を購入した時点から無期限に有効です。
+
+
+品質保証・動作保証について
+本製品は、購入者の声、PC、マイク、収録環境、入力テキストなどの違いにより、収録されているサンプルボイスと完全に同じになることは保証できません。また、PCなどの動作環境によっては、うまく動かない場合もあります。RVC、及びStyle-Bert-Vits2についてよく調べた上での購入をお願い致します。
+まずは無料版からお試しいただくようお願いいたします。
+
+
+
+
+Guidelines and Terms of Use
+
+
+By purchasing, downloading, or installing this product, the user is considered to have agreed to these Terms of Use and Guidelines. Please be sure to read these Terms of Use before starting to use this data.
+Scope of Use： Commercial use, including streaming on YouTube and game commentary, is permitted within the scope of these Terms of Use. However, this does not imply the transfer of copyright, ownership, or any other rights. Additionally, this does not apply to the use of the character "Rinne Elu" itself.
+About "Rinne Elu"： To encourage both AI-based and traditional creative works, we encourage you to use the character "Rinne Elu" freely and flexibly. However, please refrain from actions that would severely damage the character's dignity. For adult content, please follow the character usage guidelines of the "Tohoku Zunko & Zundamon Project." Discreet use is recommended. For corporate use, please contact the X account of Cyber Angel Industries (@wangoroge_333).
+The use of this audio material is limited to the purchaser. Resale, reproduction, transfer, or sharing with third parties is prohibited. However, to support the AI voice synthesis culture, use as a merging resource for models is permitted. Please avoid distributing anything that sounds too similar to the original "Rinne Elu" voice.
+Copyright and Disclaimer： The copyright for this product and each individual audio material that composes it belongs to Cyber Angel Industries. However, Cyber Angel Industries is not responsible for any damages resulting from the works created or their use.
+Prohibited Actions： The following actions are prohibited for users:
+* Actions that limit the use of this product or reproduce it for third parties
+* Transfer or inheritance of usage rights to third parties
+* Actions that cause or may cause damage to the provider or third parties
+* Acts that violate laws, public order, political or religious use, or criminal activities
+* Criminal acts or actions that may lead to crime
+* Statements, sales, or reproductions that make it appear as though this product was self-created
+* Any other actions deemed inappropriate by Cyber Angel Industries
+Changes to the Terms of Use： Cyber Angel Industries may change the content of these terms without prior notice.
+Validity Period of These Terms： These terms are valid indefinitely from the point of product purchase.
+Quality Assurance and Operational Guarantee： Due to differences in the purchaser's voice, PC, microphone, recording environment, and input text, this product may not completely match the sample voices included. Also, depending on the operating environment, the product may not function properly. Please research RVC and Style-Bert-Vits2 thoroughly before purchasing. We recommend trying the free version first.

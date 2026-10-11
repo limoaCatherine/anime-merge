@@ -1,13 +1,13 @@
 // 石头障碍：不能合成；从地面"升起"(物理刚体逐渐变大，温和地推开周围角色)；
 // 邻接发生 N 次合成后碎裂，期间显示裂纹。
 import Matter from '../lib/matter.js';
+import { getPlatform } from '../platform/index.js';
 
 let textureCache = null;
 function stoneTexture() {
   if (textureCache) return textureCache;
   const S = 256;
-  const c = document.createElement('canvas');
-  c.width = c.height = S;
+  const c = getPlatform().createCanvas(S, S);
   const g = c.getContext('2d');
   const grad = g.createRadialGradient(S * 0.38, S * 0.34, S * 0.05, S / 2, S / 2, S / 2);
   grad.addColorStop(0, '#d9d6e0');

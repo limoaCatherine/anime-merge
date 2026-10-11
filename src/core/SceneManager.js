@@ -52,6 +52,9 @@ export class SceneManager {
   }
 
   forward(method, arg) {
+    // 占位广告显示中：输入只交给广告画面
+    const ad = this.game.adOverlay;
+    if (ad && ad.active) { if (ad[method]) ad[method](arg); return; }
     if (!this.current || this.phase === 'out') return;
     this.current[method](arg);
   }

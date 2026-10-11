@@ -14,12 +14,35 @@ export class GameOverScene extends Scene {
   enter(data) {
     this.data = data;
     const cx = this.game.width / 2;
-    this.retryBtn = new Button({ x: cx, y: 690, w: 250, h: 70, label: '再来一局', fontSize: 30, onClick: () => this.retry() });
-    this.menuBtn = new Button({ x: cx, y: 780, w: 220, h: 60, label: '返回菜单', style: 'secondary', fontSize: 24, onClick: () => this.game.scenes.change('menu') });
+    const platform = this.game.platform;
+    // 抖音：录屏分享按钮 (每局自动录屏)；微信：转发给好友
+    this.canShare = !!(platform.canRecord || platform.canShare);
+    const dy = this.canShare ? 34 : 0;
+    this.retryBtn = new Button({ x: cx, y: 690 + dy, w: 250, h: 70, label: '再来一局', fontSize: 30, onClick: () => this.retry() });
+    this.menuBtn = new Button({ x: cx, y: 780 + dy, w: 220, h: 60, label: '返回菜单', style: 'secondary', fontSize: 24, onClick: () => this.game.scenes.change('menu') });
     this.buttons = [this.retryBtn, this.menuBtn];
+    this.videoPath = null;
+    if (this.canShare) {
+      this.shareBtn = new Button({ x: cx, y: 652, w: 250, h: 52, label: platform.canRecord ? '分享精彩片段' : '分享给好友', style: 'secondary', fontSize: 21, onClick: () => this.share() });
+      this.buttons.unshift(this.shareBtn);
+      Promise.resolve(data.video).then((p) => { this.videoPath = p || null; });
+    }
     this.buttons.forEach((b) => { b.audio = this.game.audio; });
     this.shownScore = 0;
     this.dt = 1 / 60;
+  }
+
+  share() {
+    const p = this.game.platform;
+    if (!p.canRecord) {
+      p.shareGame({ score: this.data.score, maxLevel: this.data.maxLevel })
+        .then((ok) => this.game.events.emit('share:game', { ok, placement: 'gameover' }));
+      return;
+    }
+    Promise.resolve(this.data.video).then((path) => {
+      if (!path) { p.toast('录屏太短或不可用，暂时无法分享'); return; }
+      p.shareVideo(path).then((ok) => this.game.events.emit('share:video', { ok, placement: 'gameover' }));
+    });
   }
 
   retry() {
@@ -55,7 +78,7 @@ export class GameOverScene extends Scene {
     ctx.scale(k, k);
     ctx.translate(-w / 2, -h / 2);
 
-    drawPanel(ctx, 50, 170, w - 100, 660, 30);
+    drawPanel(ctx, 50, 170, w - 100, this.canShare ? 700 : 660, 30);
     drawText(ctx, '游戏结束', w / 2, 225, { size: 44, color: C.primary, stroke: '#fff', strokeWidth: 10 });
 
     const diff = DIFFICULTIES[d.difficulty];
@@ -79,7 +102,7 @@ export class GameOverScene extends Scene {
     drawText(ctx, '本局最高合成', w / 2, 432, { size: 16, color: '#9a7bb0', weight: 'normal' });
     drawPortrait(ctx, this.game.assets.getImage(def.key), w / 2, 510, 58);
     drawText(ctx, `Lv.${d.maxLevel + 1} ${def.name}`, w / 2, 590, { size: 22, color: C.text });
-    drawText(ctx, `共合成 ${d.merges} 次`, w / 2, 620, { size: 15, color: '#9a7bb0', weight: 'normal' });
+    drawText(ctx, `共合成 ${d.merges} 次`, w / 2, this.canShare ? 612 : 620, { size: 15, color: '#9a7bb0', weight: 'normal' });
 
     for (const b of this.buttons) b.render(ctx, this.dt);
     ctx.restore();
